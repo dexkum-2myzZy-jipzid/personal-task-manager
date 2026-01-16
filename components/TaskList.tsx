@@ -1,6 +1,5 @@
 import { FlatList, ListRenderItem, StyleSheet, Text, View } from 'react-native';
 
-import { mockTasks } from '../features/tasks/mockTasks';
 import { Task } from '../types/task';
 
 const renderTaskItem: ListRenderItem<Task> = ({ item }) => {
@@ -15,10 +14,14 @@ const renderTaskItem: ListRenderItem<Task> = ({ item }) => {
   );
 };
 
-export function TaskList() {
+type TaskListProps = {
+  tasks: Task[];
+};
+
+export function TaskList({ tasks }: TaskListProps) {
   return (
     <FlatList
-      data={mockTasks}
+      data={tasks}
       keyExtractor={(item) => item.id}
       renderItem={renderTaskItem}
       contentContainerStyle={styles.listContent}
