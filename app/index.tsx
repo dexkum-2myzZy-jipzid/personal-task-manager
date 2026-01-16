@@ -1,28 +1,26 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text } from 'react-native';
+
+import { TaskList } from '../components/TaskList';
 
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Personal Task Manager</Text>
-      <Text style={styles.subtitle}>Start building your app here.</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>Tasks</Text>
+      <TaskList />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
+    backgroundColor: '#F9FAFB',
   },
-  title: {
-    fontSize: 22,
+  header: {
+    fontSize: 20,
     fontWeight: '600',
-  },
-  subtitle: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#4B5563',
+    marginBottom: 12,
+    paddingHorizontal: 20,
+    color: '#111827',
   },
 });
