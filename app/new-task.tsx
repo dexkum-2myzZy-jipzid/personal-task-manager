@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 12,
+    marginTop: 12,
     paddingHorizontal: 20,
     color: '#111827',
   },
