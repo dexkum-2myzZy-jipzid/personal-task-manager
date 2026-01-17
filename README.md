@@ -1,6 +1,16 @@
 # Personal Task Manager
 
-## Get started
+## Project Overview
+
+Personal Task Manager is a small Expo + React Native app built with TypeScript and Expo Router. It is designed as a technical assessment focused on code quality and clarity.
+
+## Features
+
+- Create, edit, delete, and toggle tasks
+- Task status tracking with timestamps
+- Search tasks by title
+
+## Getting Started
 
 1. Install dependencies
 
@@ -8,31 +18,19 @@
    yarn
    ```
 
-2. Start the app
+2. Run the app
 
    ```bash
-   yarn expo start
+   yarn start
    ```
 
-In the output, you'll find options to open the app in a
+## Scripts
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the `app` directory. This project uses Expo Router file-based routing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `yarn start` - start Expo
+- `yarn android` - start on Android
+- `yarn ios` - start on iOS
+- `yarn web` - start on web
+- `yarn lint` - run ESLint
+- `yarn lint:fix` - fix lint issues
+- `yarn format` - run formatting (alias of lint:fix)
+- `yarn typecheck` - run TypeScript type checks

@@ -168,13 +168,12 @@ const TaskListItem = ({
   );
 };
 
-const renderTaskItem =
-  (
-    onTaskPress?: (task: Task) => void,
-    onDeleteTask?: (task: Task) => void,
-    onToggleStatus?: (taskId: string) => void,
-  ): ListRenderItem<Task> =>
-  ({ item }) => {
+const renderTaskItem = (
+  onTaskPress?: (task: Task) => void,
+  onDeleteTask?: (task: Task) => void,
+  onToggleStatus?: (taskId: string) => void,
+): ListRenderItem<Task> => {
+  function RenderTaskItem({ item }: { item: Task }) {
     return (
       <TaskListItem
         task={item}
@@ -183,7 +182,10 @@ const renderTaskItem =
         onToggleStatus={onToggleStatus}
       />
     );
-  };
+  }
+
+  return RenderTaskItem;
+};
 
 export function TaskList({
   tasks,

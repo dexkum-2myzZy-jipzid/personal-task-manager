@@ -100,8 +100,9 @@ export default function HomeScreen() {
 
   const handleTaskPress = (task: Task) => {
     router.push({
-      pathname: `/edit-task/${task.id}`,
+      pathname: '/edit-task/[taskId]',
       params: {
+        taskId: task.id,
         task: JSON.stringify(task),
       },
     });
