@@ -8,6 +8,7 @@ import { Task, TaskStatus } from '../types/task';
 
 type LocalSearchParams = {
   newTask?: string | string[];
+  updatedTask?: string | string[];
 };
 
 const isTaskStatus = (value: unknown): value is TaskStatus => {
@@ -35,39 +36,74 @@ const isTask = (value: unknown): value is Task => {
   );
 };
 
+const parseTaskFromParam = (
+  value: string | string[] | undefined,
+): Task | null => {
+  if (!value) {
+    return null;
+  }
+
+  const rawTask = Array.isArray(value) ? value[0] : value;
+
+  try {
+    const parsed: unknown = JSON.parse(rawTask);
+    return isTask(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
 export default function HomeScreen() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const { newTask } = useLocalSearchParams<LocalSearchParams>();
+  const { newTask, updatedTask } = useLocalSearchParams<LocalSearchParams>();
   const router = useRouter();
 
   useEffect(() => {
-    if (!newTask) {
-      return;
-    }
+    if (newTask) {
+      const parsed = parseTaskFromParam(newTask);
 
-    const rawTask = Array.isArray(newTask) ? newTask[0] : newTask;
+      if (!parsed) {
+        router.setParams({ newTask: undefined });
+        return;
+      }
 
-    let parsed: unknown;
+      setTasks((prev) => {
+        const exists = prev.some((task) => task.id === parsed.id);
+        return exists ? prev : [parsed, ...prev];
+      });
 
-    try {
-      parsed = JSON.parse(rawTask);
-    } catch {
       router.setParams({ newTask: undefined });
-      return;
     }
 
-    if (!isTask(parsed)) {
-      router.setParams({ newTask: undefined });
-      return;
-    }
+    if (updatedTask) {
+      const parsed = parseTaskFromParam(updatedTask);
 
-    setTasks((prev) => {
-      const exists = prev.some((task) => task.id === parsed.id);
-      return exists ? prev : [parsed, ...prev];
+      if (!parsed) {
+        router.setParams({ updatedTask: undefined });
+        return;
+      }
+
+      setTasks((prev) => {
+        const hasMatch = prev.some((task) => task.id === parsed.id);
+        if (!hasMatch) {
+          return prev;
+        }
+
+        return prev.map((task) => (task.id === parsed.id ? parsed : task));
+      });
+
+      router.setParams({ updatedTask: undefined });
+    }
+  }, [newTask, updatedTask, router]);
+
+  const handleTaskPress = (task: Task) => {
+    router.push({
+      pathname: `/edit-task/${task.id}`,
+      params: {
+        task: JSON.stringify(task),
+      },
     });
-
-    router.setParams({ newTask: undefined });
-  }, [newTask, router]);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,7 +113,7 @@ export default function HomeScreen() {
           Add
         </Link>
       </View>
-      <TaskList tasks={tasks} />
+      <TaskList tasks={tasks} onTaskPress={handleTaskPress} />
     </SafeAreaView>
   );
 }
