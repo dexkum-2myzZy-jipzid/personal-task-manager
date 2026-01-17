@@ -11,7 +11,6 @@ export default function RootLayout() {
           options={{
             title: 'New Task',
             headerBackTitle: '',
-            headerBackTitleVisible: false,
             headerBackButtonDisplayMode: 'minimal',
           }}
         />
@@ -20,7 +19,6 @@ export default function RootLayout() {
           options={{
             title: 'Edit Task',
             headerBackTitle: '',
-            headerBackTitleVisible: false,
             headerBackButtonDisplayMode: 'minimal',
           }}
         />

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   Animated,
   FlatList,
@@ -168,23 +168,6 @@ const TaskListItem = ({
   );
 };
 
-const renderTaskItem =
-  (
-    onTaskPress?: (task: Task) => void,
-    onDeleteTask?: (task: Task) => void,
-    onToggleStatus?: (taskId: string) => void,
-  ): ListRenderItem<Task> =>
-  ({ item }) => {
-    return (
-      <TaskListItem
-        task={item}
-        onTaskPress={onTaskPress}
-        onDeleteTask={onDeleteTask}
-        onToggleStatus={onToggleStatus}
-      />
-    );
-  };
-
 export function TaskList({
   tasks,
   onTaskPress,
@@ -192,11 +175,25 @@ export function TaskList({
   onToggleStatus,
   emptyMessage,
 }: TaskListProps) {
+  const renderItem = useCallback<ListRenderItem<Task>>(
+    ({ item }) => {
+      return (
+        <TaskListItem
+          task={item}
+          onTaskPress={onTaskPress}
+          onDeleteTask={onDeleteTask}
+          onToggleStatus={onToggleStatus}
+        />
+      );
+    },
+    [onTaskPress, onDeleteTask, onToggleStatus],
+  );
+
   return (
     <FlatList
       data={tasks}
       keyExtractor={(item) => item.id}
-      renderItem={renderTaskItem(onTaskPress, onDeleteTask, onToggleStatus)}
+      renderItem={renderItem}
       contentContainerStyle={styles.listContent}
       ListEmptyComponent={
         emptyMessage ? (
