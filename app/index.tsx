@@ -1,6 +1,6 @@
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TaskList } from '../components/TaskList';
@@ -56,6 +56,7 @@ const parseTaskFromParam = (
 
 export default function HomeScreen() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [searchQuery, setSearchQuery] = useState('');
   const { newTask, updatedTask } = useLocalSearchParams<LocalSearchParams>();
   const router = useRouter();
 
@@ -127,6 +128,23 @@ export default function HomeScreen() {
     );
   };
 
+  const filteredTasks = useMemo(() => {
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery.length === 0) {
+      return tasks;
+    }
+
+    const normalizedQuery = trimmedQuery.toLowerCase();
+    return tasks.filter((task) =>
+      task.title.toLowerCase().includes(normalizedQuery),
+    );
+  }, [searchQuery, tasks]);
+
+  const emptyMessage =
+    searchQuery.trim().length > 0
+      ? 'No tasks match your search.'
+      : 'No tasks yet.';
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerRow}>
@@ -135,11 +153,22 @@ export default function HomeScreen() {
           Add
         </Link>
       </View>
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Search tasks"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          autoCapitalize="none"
+          autoCorrect={false}
+          style={styles.searchInput}
+        />
+      </View>
       <TaskList
-        tasks={tasks}
+        tasks={filteredTasks}
         onTaskPress={handleTaskPress}
         onDeleteTask={handleDeleteTask}
         onToggleStatus={handleToggleStatus}
+        emptyMessage={emptyMessage}
       />
     </SafeAreaView>
   );
@@ -166,5 +195,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#2563EB',
+  },
+  searchContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  searchInput: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#111827',
   },
 });

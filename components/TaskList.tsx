@@ -17,6 +17,7 @@ type TaskListProps = {
   onTaskPress?: (task: Task) => void;
   onDeleteTask?: (task: Task) => void;
   onToggleStatus?: (taskId: string) => void;
+  emptyMessage?: string;
 };
 
 const ACTION_WIDTH = 72;
@@ -189,6 +190,7 @@ export function TaskList({
   onTaskPress,
   onDeleteTask,
   onToggleStatus,
+  emptyMessage,
 }: TaskListProps) {
   return (
     <FlatList
@@ -196,6 +198,13 @@ export function TaskList({
       keyExtractor={(item) => item.id}
       renderItem={renderTaskItem(onTaskPress, onDeleteTask, onToggleStatus)}
       contentContainerStyle={styles.listContent}
+      ListEmptyComponent={
+        emptyMessage ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>{emptyMessage}</Text>
+          </View>
+        ) : null
+      }
     />
   );
 }
@@ -204,6 +213,14 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
     paddingBottom: 24,
+  },
+  emptyState: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: '#6B7280',
   },
   swipeRow: {
     marginBottom: 12,
