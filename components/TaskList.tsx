@@ -16,6 +16,7 @@ type TaskListProps = {
   tasks: Task[];
   onTaskPress?: (task: Task) => void;
   onDeleteTask?: (task: Task) => void;
+  onToggleStatus?: (taskId: string) => void;
 };
 
 const ACTION_WIDTH = 72;
@@ -24,11 +25,18 @@ type TaskListItemProps = {
   task: Task;
   onTaskPress?: (task: Task) => void;
   onDeleteTask?: (task: Task) => void;
+  onToggleStatus?: (taskId: string) => void;
 };
 
-const TaskListItem = ({ task, onTaskPress, onDeleteTask }: TaskListItemProps) => {
+const TaskListItem = ({
+  task,
+  onTaskPress,
+  onDeleteTask,
+  onToggleStatus,
+}: TaskListItemProps) => {
   const translateX = useRef(new Animated.Value(0)).current;
   const [isOpen, setIsOpen] = useState(false);
+  const isCompleted = task.status === 'completed';
 
   const openActions = () => {
     Animated.timing(translateX, {
@@ -85,6 +93,59 @@ const TaskListItem = ({ task, onTaskPress, onDeleteTask }: TaskListItemProps) =>
     onDeleteTask?.(task);
   };
 
+  const handleToggleStatus = () => {
+    onToggleStatus?.(task.id);
+  };
+
+  const statusControl = onToggleStatus ? (
+    <Pressable
+      onPress={handleToggleStatus}
+      style={[
+        styles.statusToggle,
+        isCompleted && styles.statusToggleCompleted,
+      ]}
+    >
+      <Text
+        style={[
+          styles.statusToggleText,
+          isCompleted && styles.statusToggleTextCompleted,
+        ]}
+      >
+        {isCompleted ? 'Completed' : 'Pending'}
+      </Text>
+    </Pressable>
+  ) : (
+    <View
+      style={[
+        styles.statusToggle,
+        isCompleted && styles.statusToggleCompleted,
+      ]}
+    >
+      <Text
+        style={[
+          styles.statusToggleText,
+          isCompleted && styles.statusToggleTextCompleted,
+        ]}
+      >
+        {isCompleted ? 'Completed' : 'Pending'}
+      </Text>
+    </View>
+  );
+
+  const content = (
+    <>
+      <View style={styles.headerRow}>
+        <Text style={[styles.title, isCompleted && styles.titleCompleted]}>
+          {task.title}
+        </Text>
+        {statusControl}
+      </View>
+      {task.description.length > 0 ? (
+        <Text style={styles.description}>{task.description}</Text>
+      ) : null}
+    </>
+  );
+
   return (
     <View style={styles.swipeRow}>
       <View style={styles.deleteAction}>
@@ -96,13 +157,11 @@ const TaskListItem = ({ task, onTaskPress, onDeleteTask }: TaskListItemProps) =>
         style={[styles.card, { transform: [{ translateX }] }]}
         {...panResponder.panHandlers}
       >
-        <Pressable onPress={handlePress}>
-          <Text style={styles.title}>{task.title}</Text>
-          <Text style={styles.status}>{task.status}</Text>
-          {task.description.length > 0 ? (
-            <Text style={styles.description}>{task.description}</Text>
-          ) : null}
-        </Pressable>
+        {onTaskPress ? (
+          <Pressable onPress={handlePress}>{content}</Pressable>
+        ) : (
+          <View>{content}</View>
+        )}
       </Animated.View>
     </View>
   );
@@ -112,6 +171,7 @@ const renderTaskItem =
   (
     onTaskPress?: (task: Task) => void,
     onDeleteTask?: (task: Task) => void,
+    onToggleStatus?: (taskId: string) => void,
   ): ListRenderItem<Task> =>
   ({ item }) => {
     return (
@@ -119,16 +179,22 @@ const renderTaskItem =
         task={item}
         onTaskPress={onTaskPress}
         onDeleteTask={onDeleteTask}
+        onToggleStatus={onToggleStatus}
       />
     );
   };
 
-export function TaskList({ tasks, onTaskPress, onDeleteTask }: TaskListProps) {
+export function TaskList({
+  tasks,
+  onTaskPress,
+  onDeleteTask,
+  onToggleStatus,
+}: TaskListProps) {
   return (
     <FlatList
       data={tasks}
       keyExtractor={(item) => item.id}
-      renderItem={renderTaskItem(onTaskPress, onDeleteTask)}
+      renderItem={renderTaskItem(onTaskPress, onDeleteTask, onToggleStatus)}
       contentContainerStyle={styles.listContent}
     />
   );
@@ -149,6 +215,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E5E7EB',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
   },
   deleteAction: {
     position: 'absolute',
@@ -177,12 +249,30 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111827',
   },
-  status: {
-    marginTop: 4,
-    fontSize: 12,
-    fontWeight: '500',
-    textTransform: 'uppercase',
+  titleCompleted: {
     color: '#6B7280',
+    textDecorationLine: 'line-through',
+  },
+  statusToggle: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#CBD5F5',
+    backgroundColor: '#EFF6FF',
+  },
+  statusToggleCompleted: {
+    borderColor: '#86EFAC',
+    backgroundColor: '#DCFCE7',
+  },
+  statusToggleText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    color: '#1D4ED8',
+  },
+  statusToggleTextCompleted: {
+    color: '#166534',
   },
   description: {
     marginTop: 8,
