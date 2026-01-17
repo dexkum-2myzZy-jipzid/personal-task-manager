@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { TaskForm, TaskFormState } from '../../components/TaskForm';
 import { Task, TaskStatus } from '../../types/task';
@@ -86,12 +86,12 @@ export default function EditTaskScreen() {
 
   if (!taskToEdit) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <Text style={styles.header}>Edit Task</Text>
         <View style={styles.formContainer}>
           <Text style={styles.helperText}>Task not found.</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -102,7 +102,7 @@ export default function EditTaskScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.header}>Edit Task</Text>
       <View style={styles.formContainer}>
         <TaskForm
@@ -111,7 +111,7 @@ export default function EditTaskScreen() {
           onSubmit={handleSubmit}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -123,8 +123,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 12,
-    marginTop: 12,
+    marginVertical: 12,
     paddingHorizontal: 20,
     color: '#111827',
   },

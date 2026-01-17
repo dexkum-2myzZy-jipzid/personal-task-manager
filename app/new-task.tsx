@@ -1,8 +1,8 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { useRouter } from 'expo-router';
 import { TaskForm, TaskFormState } from '../components/TaskForm';
 import { Task } from '../types/task';
-import { useRouter } from 'expo-router';
 
 export default function NewTaskScreen() {
   const router = useRouter();
@@ -27,12 +27,12 @@ export default function NewTaskScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.header}>New Task</Text>
       <View style={styles.formContainer}>
         <TaskForm onSubmit={handleSubmit} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -44,8 +44,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 12,
-    marginTop: 12,
+    marginVertical: 12,
     paddingHorizontal: 20,
     color: '#111827',
   },
