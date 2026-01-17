@@ -110,6 +110,23 @@ export default function HomeScreen() {
     setTasks((prev) => prev.filter((item) => item.id !== task.id));
   };
 
+  const handleToggleStatus = (taskId: string) => {
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id !== taskId) {
+          return task;
+        }
+
+        const nextStatus = task.status === 'pending' ? 'completed' : 'pending';
+        return {
+          ...task,
+          status: nextStatus,
+          updatedAt: Date.now(),
+        };
+      }),
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerRow}>
@@ -122,6 +139,7 @@ export default function HomeScreen() {
         tasks={tasks}
         onTaskPress={handleTaskPress}
         onDeleteTask={handleDeleteTask}
+        onToggleStatus={handleToggleStatus}
       />
     </SafeAreaView>
   );
