@@ -1,29 +1,49 @@
-import { FlatList, ListRenderItem, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  ListRenderItem,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { Task } from '../types/task';
 
-const renderTaskItem: ListRenderItem<Task> = ({ item }) => {
-  return (
-    <View style={styles.card}>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.status}>{item.status}</Text>
-      {item.description.length > 0 ? (
-        <Text style={styles.description}>{item.description}</Text>
-      ) : null}
-    </View>
-  );
-};
-
 type TaskListProps = {
   tasks: Task[];
+  onTaskPress?: (task: Task) => void;
 };
 
-export function TaskList({ tasks }: TaskListProps) {
+const renderTaskItem =
+  (onTaskPress?: (task: Task) => void): ListRenderItem<Task> =>
+  ({ item }) => {
+    const content = (
+      <>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.status}>{item.status}</Text>
+        {item.description.length > 0 ? (
+          <Text style={styles.description}>{item.description}</Text>
+        ) : null}
+      </>
+    );
+
+    if (!onTaskPress) {
+      return <View style={styles.card}>{content}</View>;
+    }
+
+    return (
+      <Pressable style={styles.card} onPress={() => onTaskPress(item)}>
+        {content}
+      </Pressable>
+    );
+  };
+
+export function TaskList({ tasks, onTaskPress }: TaskListProps) {
   return (
     <FlatList
       data={tasks}
       keyExtractor={(item) => item.id}
-      renderItem={renderTaskItem}
+      renderItem={renderTaskItem(onTaskPress)}
       contentContainerStyle={styles.listContent}
     />
   );

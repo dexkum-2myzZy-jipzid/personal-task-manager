@@ -1,17 +1,13 @@
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { TaskForm } from '../components/TaskForm';
+import { TaskForm, TaskFormState } from '../components/TaskForm';
 import { Task } from '../types/task';
 import { useRouter } from 'expo-router';
 
 export default function NewTaskScreen() {
   const router = useRouter();
 
-  const handleSubmit = (values: {
-    title: string;
-    description: string;
-    status: Task['status'];
-  }) => {
+  const handleSubmit = (values: TaskFormState) => {
     const timestamp = Date.now();
     const newTask: Task = {
       id: `${timestamp}`,
@@ -49,6 +45,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 12,
+    marginTop: 12,
     paddingHorizontal: 20,
     color: '#111827',
   },

@@ -9,7 +9,7 @@ import {
 
 import { TaskStatus } from '../types/task';
 
-type TaskFormState = {
+export type TaskFormState = {
   title: string;
   description: string;
   status: TaskStatus;
@@ -19,18 +19,40 @@ const statusOptions: TaskStatus[] = ['pending', 'completed'];
 
 type TaskFormProps = {
   onSubmit: (values: TaskFormState) => void;
+  initialValues?: TaskFormState;
+  submitLabel?: string;
 };
 
-export function TaskForm({ onSubmit }: TaskFormProps) {
-  const [formState, setFormState] = useState<TaskFormState>({
-    title: '',
-    description: '',
-    status: 'pending',
-  });
+const getInitialValues = (initialValues?: TaskFormState): TaskFormState => {
+  return (
+    initialValues ?? {
+      title: '',
+      description: '',
+      status: 'pending',
+    }
+  );
+};
+
+export function TaskForm({
+  onSubmit,
+  initialValues,
+  submitLabel = 'Create Task',
+}: TaskFormProps) {
+  const [formState, setFormState] = useState<TaskFormState>(() =>
+    getInitialValues(initialValues),
+  );
   const isTitleValid = formState.title.trim().length > 0;
 
   const setStatus = (status: TaskStatus) => {
     setFormState((prev) => ({ ...prev, status }));
+  };
+
+  const handleSubmit = () => {
+    if (!isTitleValid) {
+      return;
+    }
+
+    onSubmit(formState);
   };
 
   return (
@@ -86,11 +108,11 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
 
       <Pressable
         style={[styles.submitButton, isTitleValid && styles.submitButtonActive]}
-        onPress={() => onSubmit(formState)}
+        onPress={handleSubmit}
         disabled={!isTitleValid}
       >
         <Text style={[styles.submitText, isTitleValid && styles.submitTextActive]}>
-          Create Task
+          {submitLabel}
         </Text>
       </Pressable>
     </View>
