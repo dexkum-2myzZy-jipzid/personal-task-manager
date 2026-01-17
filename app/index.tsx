@@ -1,6 +1,7 @@
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TaskList } from '../components/TaskList';
 import { mockTasks } from '../features/tasks/mockTasks';
@@ -105,6 +106,10 @@ export default function HomeScreen() {
     });
   };
 
+  const handleDeleteTask = (task: Task) => {
+    setTasks((prev) => prev.filter((item) => item.id !== task.id));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerRow}>
@@ -113,7 +118,11 @@ export default function HomeScreen() {
           Add
         </Link>
       </View>
-      <TaskList tasks={tasks} onTaskPress={handleTaskPress} />
+      <TaskList
+        tasks={tasks}
+        onTaskPress={handleTaskPress}
+        onDeleteTask={handleDeleteTask}
+      />
     </SafeAreaView>
   );
 }
