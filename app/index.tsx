@@ -141,6 +141,19 @@ export default function HomeScreen() {
     );
   }, [searchQuery, tasks]);
 
+  const orderedTasks = useMemo(() => {
+    return filteredTasks
+      .map((task, index) => ({ task, index }))
+      .sort((a, b) => {
+        if (a.task.status === b.task.status) {
+          return a.index - b.index;
+        }
+
+        return a.task.status === 'pending' ? -1 : 1;
+      })
+      .map((item) => item.task);
+  }, [filteredTasks]);
+
   const emptyMessage =
     searchQuery.trim().length > 0
       ? 'No tasks match your search.'
@@ -165,7 +178,7 @@ export default function HomeScreen() {
         />
       </View>
       <TaskList
-        tasks={filteredTasks}
+        tasks={orderedTasks}
         onTaskPress={handleTaskPress}
         onDeleteTask={handleDeleteTask}
         onToggleStatus={handleToggleStatus}
@@ -184,6 +197,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingTop: 12,
     marginBottom: 12,
     paddingHorizontal: 20,
   },

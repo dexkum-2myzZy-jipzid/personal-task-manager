@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   swipeRow: {
     marginBottom: 12,
-    borderRadius: 12,
+    borderRadius: 18,
     overflow: 'hidden',
   },
   card: {
@@ -229,6 +229,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E5E7EB',
+    borderRadius: 18,
   },
   headerRow: {
     flexDirection: 'row',
