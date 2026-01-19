@@ -5,53 +5,37 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TaskList } from '../components/TaskList';
 import { mockTasks } from '../features/tasks/mockTasks';
-import { Task, TaskStatus } from '../types/task';
+import { Task } from '../types/task';
+import { parseTaskFromParam } from '../utils/taskParams';
 
 type LocalSearchParams = {
   newTask?: string | string[];
   updatedTask?: string | string[];
 };
 
-const isTaskStatus = (value: unknown): value is TaskStatus => {
-  return value === 'pending' || value === 'completed';
-};
-
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-};
-
-const isTask = (value: unknown): value is Task => {
-  if (!isRecord(value)) {
-    return false;
+const filterTasksByQuery = (tasks: Task[], query: string): Task[] => {
+  const trimmedQuery = query.trim();
+  if (trimmedQuery.length === 0) {
+    return tasks;
   }
 
-  return (
-    typeof value.id === 'string' &&
-    typeof value.title === 'string' &&
-    typeof value.description === 'string' &&
-    isTaskStatus(value.status) &&
-    typeof value.createdAt === 'number' &&
-    Number.isFinite(value.createdAt) &&
-    typeof value.updatedAt === 'number' &&
-    Number.isFinite(value.updatedAt)
+  const normalizedQuery = trimmedQuery.toLowerCase();
+  return tasks.filter((task) =>
+    task.title.toLowerCase().includes(normalizedQuery),
   );
 };
 
-const parseTaskFromParam = (
-  value: string | string[] | undefined,
-): Task | null => {
-  if (!value) {
-    return null;
-  }
+const orderTasksByStatus = (tasks: Task[]): Task[] => {
+  return tasks
+    .map((task, index) => ({ task, index }))
+    .sort((a, b) => {
+      if (a.task.status === b.task.status) {
+        return a.index - b.index;
+      }
 
-  const rawTask = Array.isArray(value) ? value[0] : value;
-
-  try {
-    const parsed: unknown = JSON.parse(rawTask);
-    return isTask(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
+      return a.task.status === 'pending' ? -1 : 1;
+    })
+    .map((item) => item.task);
 };
 
 export default function HomeScreen() {
@@ -129,30 +113,15 @@ export default function HomeScreen() {
     );
   };
 
-  const filteredTasks = useMemo(() => {
-    const trimmedQuery = searchQuery.trim();
-    if (trimmedQuery.length === 0) {
-      return tasks;
-    }
+  const filteredTasks = useMemo(
+    () => filterTasksByQuery(tasks, searchQuery),
+    [searchQuery, tasks],
+  );
 
-    const normalizedQuery = trimmedQuery.toLowerCase();
-    return tasks.filter((task) =>
-      task.title.toLowerCase().includes(normalizedQuery),
-    );
-  }, [searchQuery, tasks]);
-
-  const orderedTasks = useMemo(() => {
-    return filteredTasks
-      .map((task, index) => ({ task, index }))
-      .sort((a, b) => {
-        if (a.task.status === b.task.status) {
-          return a.index - b.index;
-        }
-
-        return a.task.status === 'pending' ? -1 : 1;
-      })
-      .map((item) => item.task);
-  }, [filteredTasks]);
+  const orderedTasks = useMemo(
+    () => orderTasksByStatus(filteredTasks),
+    [filteredTasks],
+  );
 
   const emptyMessage =
     searchQuery.trim().length > 0

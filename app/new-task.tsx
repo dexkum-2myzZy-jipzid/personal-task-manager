@@ -7,9 +7,10 @@ import { Task } from '../types/task';
 export default function NewTaskScreen() {
   const router = useRouter();
 
-  const handleSubmit = (values: TaskFormState) => {
+  const buildNewTask = (values: TaskFormState): Task => {
     const timestamp = Date.now();
-    const newTask: Task = {
+
+    return {
       id: `${timestamp}`,
       title: values.title.trim(),
       description: values.description.trim(),
@@ -17,6 +18,10 @@ export default function NewTaskScreen() {
       createdAt: timestamp,
       updatedAt: timestamp,
     };
+  };
+
+  const handleSubmit = (values: TaskFormState) => {
+    const newTask = buildNewTask(values);
 
     router.dismissTo({
       pathname: '/',
