@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Personal Task Manager is a small Expo + React Native app built with TypeScript and Expo Router. It is designed as a technical assessment focused on code quality and clarity.
+Personal Task Manager is a small Expo + React Native app built with TypeScript and Expo Router.
 
 ## Features
 

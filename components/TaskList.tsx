@@ -98,39 +98,26 @@ const TaskListItem = ({
     onToggleStatus?.(task.id);
   };
 
+  const statusLabel = isCompleted ? 'Completed' : 'Pending';
+  const statusStyles = [
+    styles.statusToggle,
+    isCompleted && styles.statusToggleCompleted,
+  ];
+  const statusTextStyles = [
+    styles.statusToggleText,
+    isCompleted && styles.statusToggleTextCompleted,
+  ];
+
+  const statusContent = (
+    <Text style={statusTextStyles}>{statusLabel}</Text>
+  );
+
   const statusControl = onToggleStatus ? (
-    <Pressable
-      onPress={handleToggleStatus}
-      style={[
-        styles.statusToggle,
-        isCompleted && styles.statusToggleCompleted,
-      ]}
-    >
-      <Text
-        style={[
-          styles.statusToggleText,
-          isCompleted && styles.statusToggleTextCompleted,
-        ]}
-      >
-        {isCompleted ? 'Completed' : 'Pending'}
-      </Text>
+    <Pressable onPress={handleToggleStatus} style={statusStyles}>
+      {statusContent}
     </Pressable>
   ) : (
-    <View
-      style={[
-        styles.statusToggle,
-        isCompleted && styles.statusToggleCompleted,
-      ]}
-    >
-      <Text
-        style={[
-          styles.statusToggleText,
-          isCompleted && styles.statusToggleTextCompleted,
-        ]}
-      >
-        {isCompleted ? 'Completed' : 'Pending'}
-      </Text>
-    </View>
+    <View style={statusStyles}>{statusContent}</View>
   );
 
   const content = (

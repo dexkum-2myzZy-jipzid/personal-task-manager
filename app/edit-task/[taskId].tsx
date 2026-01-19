@@ -2,79 +2,58 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { TaskForm, TaskFormState } from '../../components/TaskForm';
-import { Task, TaskStatus } from '../../types/task';
+import { Task } from '../../types/task';
+import { parseTaskFromParam } from '../../utils/taskParams';
 
 type EditTaskParams = {
   taskId?: string | string[];
   task?: string | string[];
 };
 
-const isTaskStatus = (value: unknown): value is TaskStatus => {
-  return value === 'pending' || value === 'completed';
-};
-
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-};
-
-const isTask = (value: unknown): value is Task => {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  return (
-    typeof value.id === 'string' &&
-    typeof value.title === 'string' &&
-    typeof value.description === 'string' &&
-    isTaskStatus(value.status) &&
-    typeof value.createdAt === 'number' &&
-    Number.isFinite(value.createdAt) &&
-    typeof value.updatedAt === 'number' &&
-    Number.isFinite(value.updatedAt)
-  );
-};
-
-const parseTaskFromParam = (
+const resolveFirstParam = (
   value: string | string[] | undefined,
-): Task | null => {
-  if (!value) {
+): string | undefined => {
+  return Array.isArray(value) ? value[0] : value;
+};
+
+const resolveTaskToEdit = (params: EditTaskParams): Task | null => {
+  const resolvedTaskId = resolveFirstParam(params.taskId);
+  const parsedTask = parseTaskFromParam(params.task);
+
+  if (!resolvedTaskId || !parsedTask) {
     return null;
   }
 
-  const rawTask = Array.isArray(value) ? value[0] : value;
-
-  try {
-    const parsed: unknown = JSON.parse(rawTask);
-    return isTask(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
+  return parsedTask.id === resolvedTaskId ? parsedTask : null;
 };
 
 export default function EditTaskScreen() {
-  const { taskId, task } = useLocalSearchParams<EditTaskParams>();
+  const params = useLocalSearchParams<EditTaskParams>();
   const router = useRouter();
 
-  const resolvedTaskId = Array.isArray(taskId) ? taskId[0] : taskId;
-  const parsedTask = parseTaskFromParam(task);
-  const taskToEdit =
-    resolvedTaskId && parsedTask && parsedTask.id === resolvedTaskId
-      ? parsedTask
-      : null;
+  const taskToEdit = resolveTaskToEdit(params);
+
+  const buildUpdatedTask = (
+    task: Task,
+    values: TaskFormState,
+  ): Task => {
+    const timestamp = Date.now();
+
+    return {
+      ...task,
+      title: values.title.trim(),
+      description: values.description.trim(),
+      status: values.status,
+      updatedAt: timestamp,
+    };
+  };
 
   const handleSubmit = (values: TaskFormState) => {
     if (!taskToEdit) {
       return;
     }
 
-    const timestamp = Date.now();
-    const updatedTask: Task = {
-      ...taskToEdit,
-      title: values.title.trim(),
-      description: values.description.trim(),
-      status: values.status,
-      updatedAt: timestamp,
-    };
+    const updatedTask = buildUpdatedTask(taskToEdit, values);
 
     router.dismissTo({
       pathname: '/',
