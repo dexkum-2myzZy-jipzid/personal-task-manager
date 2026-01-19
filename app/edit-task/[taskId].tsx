@@ -76,7 +76,7 @@ export default function EditTaskScreen() {
       updatedAt: timestamp,
     };
 
-    router.replace({
+    router.dismissTo({
       pathname: '/',
       params: {
         updatedTask: JSON.stringify(updatedTask),

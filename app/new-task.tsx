@@ -18,7 +18,7 @@ export default function NewTaskScreen() {
       updatedAt: timestamp,
     };
 
-    router.replace({
+    router.dismissTo({
       pathname: '/',
       params: {
         newTask: JSON.stringify(newTask),
